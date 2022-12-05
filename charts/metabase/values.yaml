@@ -1,0 +1,47 @@
+image:
+  # image.repository - The repository to pull the Docker image from
+  repository: metabase
+  # image.name - The name of the Docker image
+  name: metabase
+  # image.tag - The tag of the Docker image to use
+  tag: latest
+
+metabase:
+  # metabase.javaTimezone - It's best to set your Java timezone to match the timezone you'd like all your reports to come in.
+  javaTimezone: "America/New_York"
+
+  # metabase.dbFile - The local path to the Metabase application database file
+  dbFile: "/metabase-data/metabase.db"
+
+  # metabase.port - Service port for connecting to Metabase
+  port: 80
+
+  #  metabase.memoryLimit - How much memory to grant the pod to use
+  memoryLimit: "2Gi"
+
+ingress:
+  # ingress.enabled - Whether to create an Ingress
+  enabled: false
+
+  alb:
+    # ingress.alb.enabled - Whether to create the annotations for an AWS ALB
+    enabled: false
+
+    # ingress.alb.subnets - Comma-separated list of subnets for the ALB
+    subnets: ""
+
+    # ingress.alb.certificateArn - ARN for an HTTPS certificate
+    certificateArn: ""
+
+  # ingress.annotations - Map to annotate the Ingress with
+  annotations: {}
+
+persistentVolume:
+  # persistentVolume.enabled - Whether to create a Persistent Volume for mounting the metabase application database file
+  enabled: false
+
+  # persistentVolume.storageClass - The storage class to use for the PVC
+  storageClass: "gp2"
+
+  # persistentVolume.size - The size of the persistent volume
+  size: "10Gi"

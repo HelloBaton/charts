@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Chart.Name }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  replicas: 1  # if we increase this, more work will need to be done to ensure the db file can be shared properly
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          resources:
+            limits:
+              memory: "{{ .Values.metabase.memoryLimit }}"
+          env:
+            - name: JAVA_TIMEZONE
+              value: "{{ .Values.metabase.javaTimezone }}"
+            - name: MB_DB_FILE
+              value: "{{ .Values.metabase.dbFile }}"
+          {{- if .Values.persistentVolume.enabled }}
+          volumeMounts:
+            - name: db-volume
+              mountPath: "{{ dir .Values.metabase.dbFile }}"
+          {{- end }}
+      {{- if .Values.persistentVolume.enabled }}
+      volumes:
+        - name: db-volume
+          persistentVolumeClaim:
+            claimName: "{{ .Chart.Name }}-db-pvc"
+      {{- end }}
